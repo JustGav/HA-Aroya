@@ -133,7 +133,6 @@ class AroyaSensor(SensorEntity):
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
             "port_ec": "mdi:flash",
-        }
             "humidity": "mdi:water-percent",
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
