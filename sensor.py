@@ -121,8 +121,6 @@ class AroyaSensor(SensorEntity):
         return self._attr_unique_id
 
     @property
-    @property
-    @property
     def icon(self):
         icons = {
             "temperature": "mdi:thermometer",

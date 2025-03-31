@@ -16,4 +16,3 @@ class AroyaConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 vol.Required(CONF_API_KEY): str
             })
         )
-
