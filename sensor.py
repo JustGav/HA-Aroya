@@ -124,6 +124,16 @@ class AroyaSensor(SensorEntity):
     def icon(self):
         icons = {
             "temperature": "mdi:thermometer",
+            "soil_temp": "mdi:thermometer",
+            "air_temp": "mdi:thermometer",
+            "soil_moist": "mdi:water",
+            "humidity": "mdi:water-percent",
+            "rel_hum": "mdi:water",
+            "abs_hum": "mdi:water",
+            "co2": "mdi:molecule-co2",
+            "ppfd": "mdi:weather-sunny-alert",
+            "port_ec": "mdi:flash",
+        }
             "humidity": "mdi:water-percent",
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
