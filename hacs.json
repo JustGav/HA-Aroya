@@ -1,0 +1,9 @@
+{
+  "name": "Aroya Integration",
+  "domain": "aroya",
+  "codeowners": ["@JustGav"],
+  "documentation": "https://github.com/JustGav/HA-Aroya",
+  "requirements": [],
+  "config_flow": true
+  "logo": "custom_components/aroya/icons/aroya.png"
+}
