@@ -122,6 +122,7 @@ class AroyaSensor(SensorEntity):
 
     @property
     @property
+    @property
     def icon(self):
         icons = {
             "temperature": "mdi:thermometer",
@@ -134,12 +135,6 @@ class AroyaSensor(SensorEntity):
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
             "port_ec": "mdi:flash",
-        }
-        return icons.get(self._sensor_type.lower(), "mdi:leaf-circle")
-            "humidity": "mdi:water-percent",
-            "co2": "mdi:molecule-co2",
-            "ppfd": "mdi:weather-sunny-alert",
-            "abs_hum": "mdi:water",
         }
         return icons.get(self._sensor_type.lower(), "mdi:leaf-circle")
 
