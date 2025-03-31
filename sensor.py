@@ -121,6 +121,7 @@ class AroyaSensor(SensorEntity):
         return self._attr_unique_id
 
     @property
+    @property
     def icon(self):
         icons = {
             "temperature": "mdi:thermometer",
@@ -133,6 +134,8 @@ class AroyaSensor(SensorEntity):
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
             "port_ec": "mdi:flash",
+        }
+        return icons.get(self._sensor_type.lower(), "mdi:leaf-circle")
             "humidity": "mdi:water-percent",
             "co2": "mdi:molecule-co2",
             "ppfd": "mdi:weather-sunny-alert",
@@ -188,4 +191,6 @@ class AroyaSensor(SensorEntity):
             if new_readings:
                 latest = max(new_readings, key=lambda x: x["timestamp"])
                 self._state = latest["value"]
+                if self._sensor_type.lower() in ["soil_temp", "air_temp"]:
+                    self._state = round((self._state - 32) * 5.0 / 9.0, 2)
                 self._seen_timestamps.update(r["timestamp"] for r in new_readings)
