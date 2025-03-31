@@ -1,0 +1,17 @@
+{
+  "domain": "aroya",
+  "name": "Aroya Integration",
+  "version": "1.0.0",
+  "documentation": "https://www.cannabus.io/aroya",
+  "dependencies": [],
+  "requirements": [
+    "aiohttp",
+    "async_timeout"
+  ],
+  "codeowners": ["@JustGav"],
+  "config_flow": true,
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "logo": "custom_components/aroya/icons/aroya.jpg"
+}
+
