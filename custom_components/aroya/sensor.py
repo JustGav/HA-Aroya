@@ -1,4 +1,3 @@
-
 import logging
 import aiohttp
 import async_timeout
@@ -6,11 +5,10 @@ import async_timeout
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import (
     CONF_API_KEY,
-    TEMP_CELSIUS,
     PERCENTAGE,
-    CONCENTRATION_PARTS_PER_MILLION,
-    ELECTRICAL_CONDUCTIVITY,
-    IRRADIANCE_WATTS_PER_SQUARE_METER,
+    UnitOfTemperature,
+    UnitOfConcentration,
+    UnitOfElectricConductivity,
 )
 
 from .const import DOMAIN, API_BASE
@@ -97,7 +95,7 @@ class AroyaSensor(SensorEntity):
 
         sensor_type_lc = self._sensor_type.lower()
         if sensor_type_lc in ["temperature", "soil_temp", "air_temp"]:
-            self._attr_unit_of_measurement = TEMP_CELSIUS
+            self._attr_unit_of_measurement = UnitOfTemperature.CELSIUS
             self._attr_device_class = "temperature"
         elif sensor_type_lc in ["humidity", "rel_hum", "soil_moist"]:
             self._attr_unit_of_measurement = PERCENTAGE
@@ -106,13 +104,13 @@ class AroyaSensor(SensorEntity):
             self._attr_unit_of_measurement = "g/m³"
             self._attr_device_class = "humidity"
         elif sensor_type_lc == "co2":
-            self._attr_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
+            self._attr_unit_of_measurement = UnitOfConcentration.PARTS_PER_MILLION
             self._attr_device_class = "carbon_dioxide"
         elif sensor_type_lc == "ppfd":
             self._attr_unit_of_measurement = "µmol/m²/s"
             self._attr_device_class = "illuminance"
         elif sensor_type_lc == "port_ec":
-            self._attr_unit_of_measurement = "dS/m"
+            self._attr_unit_of_measurement = UnitOfElectricConductivity.MILLISEIMENS_PER_CENTIMETER
             self._attr_device_class = "voltage"
 
     @property
@@ -152,3 +150,4 @@ class AroyaSensor(SensorEntity):
                     value = (value - 32) * 5.0 / 9.0
                 self._state = round(value, 2)
                 self._seen_timestamps.update(r["timestamp"] for r in new_readings)
+
