@@ -7,11 +7,10 @@ from homeassistant.const import (
     CONF_API_KEY,
     PERCENTAGE,
 )
-from homeassistant.components.sensor.const import (
-    UnitOfTemperature,
-    UnitOfConcentration,
-    UnitOfElectricConductivity,
-)
+
+from homeassistant.components.sensor.const import UnitOfTemperature
+
+from .const import DOMAIN, API_BASE, UNIT_PARTS_PER_MILLION, UNIT_MILLISEIMENS_PER_CM
 
 from .const import DOMAIN, API_BASE
 
