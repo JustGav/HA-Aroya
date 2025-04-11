@@ -1,17 +1,20 @@
+
 import logging
 import aiohttp
 import async_timeout
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import CONF_API_KEY
+from homeassistant.const import (
+    CONF_API_KEY,
+    TEMP_CELSIUS,
+    PERCENTAGE,
+    CONCENTRATION_PARTS_PER_MILLION
+)
 from .const import DOMAIN, API_BASE
 
 _LOGGER = logging.getLogger(__name__)
-
 IGNORED_MODELS = {"gateway", "sink"}
-IGNORED_SENSOR_TYPES = {
-    "travel_time", "link_quality", "radio_power", "signal", "battery_v"
-}
+
 
 async def async_setup_entry(hass, entry, async_add_entities):
     api_key = entry.data[CONF_API_KEY]
@@ -22,9 +25,6 @@ async def async_setup_entry(hass, entry, async_add_entities):
         try:
             async with async_timeout.timeout(15):
                 async with session.get(f"{API_BASE}/devices") as resp:
-                    if resp.status != 200:
-                        _LOGGER.error("Failed to fetch devices: HTTP %s", resp.status)
-                        return
                     device_data = await resp.json()
         except Exception as e:
             _LOGGER.error("Failed to load devices from Aroya API: %s", e)
@@ -41,60 +41,43 @@ async def async_setup_entry(hass, entry, async_add_entities):
             try:
                 async with async_timeout.timeout(15):
                     async with session.get(f"{API_BASE}/devices/{device_id}/chart") as resp:
-                        if resp.status != 200:
-                            _LOGGER.warning("Chart request failed for %s: HTTP %s", device_id, resp.status)
-                            continue
-                        try:
-                            chart_data = await resp.json()
-                        except Exception as e:
-                            _LOGGER.error("Failed to parse JSON for device %s: %s", device_id, e)
-                            continue
+                        resp_json = await resp.json()
             except Exception as e:
                 _LOGGER.warning("Failed to load chart for device %s: %s", device_id, e)
                 continue
 
-            if isinstance(chart_data, dict):
-                new_chart_data = []
-                for key, readings_list in chart_data.items():
-                    sensor_type = key.split(":")[0].lower()
-                    if sensor_type in IGNORED_SENSOR_TYPES:
-                        continue
-                    if not isinstance(readings_list, list):
-                        _LOGGER.error("Readings for key %s are not a list", key)
-                        continue
-                    for reading in readings_list:
-                        new_chart_data.append({
-                            "timestamp": reading.get("x"),
-                            "value": reading.get("y"),
-                            "sensor_type": sensor_type,
-                        })
-                chart_data = new_chart_data
-            elif not isinstance(chart_data, list):
-                _LOGGER.error("Chart data for device %s is not a list or dict: %s", device_id, chart_data)
+            if isinstance(resp_json, dict) and "results" in resp_json:
+                chart_data = resp_json["results"]
+            elif isinstance(resp_json, list):
+                chart_data = resp_json
+            else:
+                _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
                 continue
 
             readings_by_type = {}
             for reading in chart_data:
-                stype = reading.get("sensor_type")
-                if not stype or stype.lower() in IGNORED_SENSOR_TYPES:
-                    continue
+                stype = reading["sensor_type"]
                 if stype not in readings_by_type:
                     readings_by_type[stype] = []
                 readings_by_type[stype].append(reading)
 
             for sensor_type, readings in readings_by_type.items():
                 latest = max(readings, key=lambda x: x["timestamp"])
+                value = latest["value"]
+                if sensor_type.lower() in ["temperature", "soil_temp", "air_temp"]:
+                    value = (value - 32) * 5.0 / 9.0
                 entity = AroyaSensor(
                     serial_number=serial,
                     device_id=device_id,
                     sensor_type=sensor_type,
-                    initial_value=latest["value"],
+                    initial_value=round(value, 2),
                     api_key=api_key,
                     seen_timestamps={r["timestamp"] for r in readings},
                 )
                 entities.append(entity)
 
     async_add_entities(entities, True)
+
 
 class AroyaSensor(SensorEntity):
     def __init__(self, serial_number, device_id, sensor_type, initial_value, api_key, seen_timestamps):
@@ -107,34 +90,34 @@ class AroyaSensor(SensorEntity):
 
         self._attr_name = f"{serial_number} {sensor_type.capitalize()}"
         self._attr_unique_id = f"aroya_{device_id}_{sensor_type}"
+        self._attr_state_class = "measurement"
 
-    @property
-    def name(self):
-        return self._attr_name
+        sensor_type_lc = self._sensor_type.lower()
+        if sensor_type_lc in ["temperature", "soil_temp", "air_temp"]:
+            self._attr_unit_of_measurement = TEMP_CELSIUS
+            self._attr_device_class = "temperature"
+        elif sensor_type_lc in ["humidity", "rel_hum"]:
+            self._attr_unit_of_measurement = PERCENTAGE
+            self._attr_device_class = "humidity"
+        elif sensor_type_lc == "abs_hum":
+            self._attr_unit_of_measurement = "g/m³"
+            self._attr_device_class = "humidity"
+        elif sensor_type_lc == "co2":
+            self._attr_unit_of_measurement = CONCENTRATION_PARTS_PER_MILLION
+            self._attr_device_class = "carbon_dioxide"
+        elif sensor_type_lc == "ppfd":
+            self._attr_unit_of_measurement = "µmol/m²/s"
+            self._attr_device_class = "illuminance"
+        elif sensor_type_lc == "soil_moist":
+            self._attr_unit_of_measurement = PERCENTAGE
+            self._attr_device_class = "moisture"
+        elif sensor_type_lc == "port_ec":
+            self._attr_unit_of_measurement = "dS/m"
+            self._attr_device_class = "voltage"
 
     @property
     def state(self):
         return self._state
-
-    @property
-    def unique_id(self):
-        return self._attr_unique_id
-
-    @property
-    def icon(self):
-        icons = {
-            "temperature": "mdi:thermometer",
-            "soil_temp": "mdi:thermometer",
-            "air_temp": "mdi:thermometer",
-            "soil_moist": "mdi:water",
-            "humidity": "mdi:water-percent",
-            "rel_hum": "mdi:water",
-            "abs_hum": "mdi:water",
-            "co2": "mdi:molecule-co2",
-            "ppfd": "mdi:weather-sunny-alert",
-            "port_ec": "mdi:flash",
-        }
-        return icons.get(self._sensor_type.lower(), "mdi:leaf-circle")
 
     async def async_update(self):
         headers = {"Authorization": f"Bearer {self._api_key}"}
@@ -144,46 +127,28 @@ class AroyaSensor(SensorEntity):
             try:
                 async with async_timeout.timeout(15):
                     async with session.get(url) as resp:
-                        if resp.status != 200:
-                            _LOGGER.warning("Chart update failed for %s: HTTP %s", self.name, resp.status)
-                            return
-                        try:
-                            data = await resp.json()
-                        except Exception as e:
-                            _LOGGER.error("Failed to parse update JSON for %s: %s", self.name, e)
-                            return
+                        resp_json = await resp.json()
             except Exception as e:
-                _LOGGER.warning("Failed to update %s: %s", self.name, e)
+                _LOGGER.warning("Failed to update %s: %s", self._attr_name, e)
                 return
 
-            if isinstance(data, dict):
-                new_data = []
-                for key, readings_list in data.items():
-                    sensor_type = key.split(":")[0].lower()
-                    if sensor_type != self._sensor_type or sensor_type in IGNORED_SENSOR_TYPES:
-                        continue
-                    if not isinstance(readings_list, list):
-                        _LOGGER.error("Readings for key %s are not a list", key)
-                        continue
-                    for reading in readings_list:
-                        new_data.append({
-                            "timestamp": reading.get("x"),
-                            "value": reading.get("y"),
-                            "sensor_type": sensor_type,
-                        })
-                data = new_data
-            elif not isinstance(data, list):
-                _LOGGER.error("Update data for %s is not a list or dict: %s", self.name, data)
+            if isinstance(resp_json, dict) and "results" in resp_json:
+                data = resp_json["results"]
+            elif isinstance(resp_json, list):
+                data = resp_json
+            else:
+                _LOGGER.warning("Unexpected update data format for %s: %s", self._attr_name, resp_json)
                 return
 
             new_readings = [
                 r for r in data
-                if r.get("sensor_type") == self._sensor_type and r.get("timestamp") not in self._seen_timestamps
+                if r["sensor_type"] == self._sensor_type and r["timestamp"] not in self._seen_timestamps
             ]
 
             if new_readings:
                 latest = max(new_readings, key=lambda x: x["timestamp"])
-                self._state = latest["value"]
-                if self._sensor_type.lower() in ["soil_temp", "air_temp"]:
-                    self._state = round((self._state - 32) * 5.0 / 9.0, 2)
+                value = latest["value"]
+                if self._sensor_type.lower() in ["temperature", "soil_temp", "air_temp"]:
+                    value = (value - 32) * 5.0 / 9.0
+                self._state = round(value, 2)
                 self._seen_timestamps.update(r["timestamp"] for r in new_readings)
