@@ -93,7 +93,7 @@ class AroyaSensor(SensorEntity):
         self._attr_unique_id = f"aroya_{device_id}_{sensor_type}"
         self._attr_state_class = "measurement"
 
-        sensor_type_lc = self._sensor_type.lower()
+        sensor_type_lc = sensor_type.lower()
         if sensor_type_lc in ["temperature", "soil_temp", "air_temp"]:
             self._attr_unit_of_measurement = UnitOfTemperature.CELSIUS
             self._attr_device_class = "temperature"
