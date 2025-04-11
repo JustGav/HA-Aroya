@@ -6,12 +6,13 @@ import async_timeout
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import (
     CONF_API_KEY,
-    UnitOfTemperature,
-    UnitOfPercentage,
-    UnitOfCO2,
-    UnitOfElectricConductivity,
-    UnitOfIrradiance
+    TEMP_CELSIUS,
+    PERCENTAGE,
+    CONCENTRATION_PARTS_PER_MILLION,
+    ELECTRICAL_CONDUCTIVITY,
+    IRRADIANCE_WATTS_PER_SQUARE_METER,
 )
+
 from .const import DOMAIN, API_BASE
 
 _LOGGER = logging.getLogger(__name__)
