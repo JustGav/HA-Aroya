@@ -48,13 +48,25 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 _LOGGER.warning("Failed to load chart for device %s: %s", device_id, e)
                 continue
 
-            if isinstance(resp_json, dict) and "results" in resp_json:
-                chart_data = resp_json["results"]
-            elif isinstance(resp_json, list):
-                chart_data = resp_json
-            else:
-                _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
-                continue
+if isinstance(resp_json, dict) and "results" in resp_json:
+    chart_data = []
+    for key, values in resp_json["results"].items():
+        try:
+            sensor_type = key.split(":")[0]
+        except IndexError:
+            _LOGGER.warning("Could not parse sensor_type from key %s", key)
+            continue
+        for point in values:
+            chart_data.append({
+                "sensor_type": sensor_type,
+                "timestamp": point["x"],
+                "value": point["y"],
+            })
+elif isinstance(resp_json, list):
+    chart_data = resp_json
+else:
+    _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
+    continue
 
             readings_by_type = {}
             for reading in chart_data:
