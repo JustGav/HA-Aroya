@@ -6,6 +6,8 @@ from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import (
     CONF_API_KEY,
     PERCENTAGE,
+)
+from homeassistant.components.sensor.const import (
     UnitOfTemperature,
     UnitOfConcentration,
     UnitOfElectricConductivity,
