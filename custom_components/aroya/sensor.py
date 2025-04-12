@@ -3,14 +3,8 @@ import aiohttp
 import async_timeout
 
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.const import (
-    CONF_API_KEY,
-    PERCENTAGE,
-)
-
-from homeassistant.components.sensor.const import UnitOfTemperature
-
-from .const import DOMAIN, API_BASE, UNIT_PARTS_PER_MILLION, UNIT_MILLISEIMENS_PER_CM
+from homeassistant.const import CONF_API_KEY, PERCENTAGE
+from homeassistant.components.sensor.const import UnitOfTemperature, UnitOfElectricConductivity, UnitOfConcentration
 
 from .const import DOMAIN, API_BASE
 
@@ -48,27 +42,27 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 _LOGGER.warning("Failed to load chart for device %s: %s", device_id, e)
                 continue
 
-if isinstance(resp_json, dict) and "results" in resp_json:
-    chart_data = []
-    for key, values in resp_json["results"].items():
-        try:
-            sensor_type = key.split(":")[0]
-        except IndexError:
-            _LOGGER.warning("Could not parse sensor_type from key %s", key)
-            continue
-        for point in values:
-            chart_data.append({
-                "sensor_type": sensor_type,
-                "timestamp": point["x"],
-                "value": point["y"],
-            })
-elif isinstance(resp_json, list):
-    chart_data = resp_json
-else:
-    _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
-    continue
+            if isinstance(resp_json, dict) and "results" in resp_json:
+                chart_data = []
+                for key, values in resp_json["results"].items():
+                    try:
+                        sensor_type = key.split(":")[0]
+                    except IndexError:
+                        _LOGGER.warning("Could not parse sensor_type from key %s", key)
+                        continue
+                    for point in values:
+                        chart_data.append({
+                            "sensor_type": sensor_type,
+                            "timestamp": point["x"],
+                            "value": point["y"],
+                        })
+            elif isinstance(resp_json, list):
+                chart_data = resp_json
+            else:
+                _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
+                continue
 
-        readings_by_type = {}
+            readings_by_type = {}
             for reading in chart_data:
                 stype = reading["sensor_type"]
                 if stype not in readings_by_type:
@@ -144,7 +138,18 @@ class AroyaSensor(SensorEntity):
                 return
 
             if isinstance(resp_json, dict) and "results" in resp_json:
-                data = resp_json["results"]
+                data = []
+                for key, values in resp_json["results"].items():
+                    try:
+                        sensor_type = key.split(":")[0]
+                    except IndexError:
+                        continue
+                    for point in values:
+                        data.append({
+                            "sensor_type": sensor_type,
+                            "timestamp": point["x"],
+                            "value": point["y"],
+                        })
             elif isinstance(resp_json, list):
                 data = resp_json
             else:
@@ -163,4 +168,3 @@ class AroyaSensor(SensorEntity):
                     value = (value - 32) * 5.0 / 9.0
                 self._state = round(value, 2)
                 self._seen_timestamps.update(r["timestamp"] for r in new_readings)
-
