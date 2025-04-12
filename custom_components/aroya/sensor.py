@@ -4,7 +4,6 @@ import async_timeout
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_API_KEY, PERCENTAGE
-from homeassistant.components.sensor.const import UnitOfTemperature, UnitOfElectricConductivity, UnitOfConcentration
 
 from .const import DOMAIN, API_BASE
 
@@ -102,7 +101,7 @@ class AroyaSensor(SensorEntity):
 
         sensor_type_lc = self._sensor_type.lower()
         if sensor_type_lc in ["temperature", "soil_temp", "air_temp"]:
-            self._attr_unit_of_measurement = UnitOfTemperature.CELSIUS
+            self._attr_unit_of_measurement = "c"
             self._attr_device_class = "temperature"
         elif sensor_type_lc in ["humidity", "rel_hum", "soil_moist"]:
             self._attr_unit_of_measurement = PERCENTAGE
