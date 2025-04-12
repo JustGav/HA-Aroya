@@ -68,7 +68,7 @@ else:
     _LOGGER.error("Unexpected chart data format for device %s: %s", device_id, resp_json)
     continue
 
-            readings_by_type = {}
+        readings_by_type = {}
             for reading in chart_data:
                 stype = reading["sensor_type"]
                 if stype not in readings_by_type:
