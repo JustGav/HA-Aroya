@@ -8,5 +8,5 @@
   "codeowners": ["@JustGav"],
   "iot_class": "cloud_polling",
   "config_flow": true,
-  "logo": "icons/aroya.png"
+  "logo": "aroya_logo_merged_256x256.png"
 }
