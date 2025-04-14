@@ -3,8 +3,9 @@
   "domain": "aroya",
   "codeowners": ["@JustGav"],
   "documentation": "https://github.com/JustGav/HA-Aroya",
+  "issue_tracker": "https://github.com/JustGav/HA-Aroya/issues",
   "requirements": [],
-  "config_flow": true
-  "logo": "aroya.png",
-  "version": "1.1.18"
+  "config_flow": true,
+  "logo": "aroya_logo_merged_256x256.png",
+  "version": "1.1.19"
 }
