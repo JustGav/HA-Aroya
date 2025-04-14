@@ -1,12 +1,12 @@
 {
   "domain": "aroya",
   "name": "Aroya",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "documentation": "https://cannabus.io/aroya",
   "requirements": ["aiohttp", "async_timeout"],
   "dependencies": [],
   "codeowners": ["@JustGav"],
   "iot_class": "cloud_polling",
   "config_flow": true,
-  "logo": "aroya_logo_merged_256x256.png"
+  "logo": "icon.png"
 }
