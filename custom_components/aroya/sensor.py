@@ -4,10 +4,12 @@ import async_timeout
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_API_KEY, PERCENTAGE
+from homeassistant.components.sensor.const import UnitOfTemperature, UnitOfConcentration
 
 from .const import DOMAIN, API_BASE
 
 _LOGGER = logging.getLogger(__name__)
+
 IGNORED_MODELS = {"gateway", "sink"}
 IGNORED_SENSOR_TYPES = {"battery_v"}
 
@@ -45,11 +47,16 @@ async def async_setup_entry(hass, entry, async_add_entities):
             if isinstance(resp_json, dict) and "results" in resp_json:
                 chart_data = []
                 for key, values in resp_json["results"].items():
-                    try:
-                        sensor_type = key.split(":")[0]
-                    except IndexError:
-                        _LOGGER.warning("Could not parse sensor_type from key %s", key)
+                    parts = key.split(":")
+                    if not parts:
+                        _LOGGER.warning("Could not parse sensor_type from key: %s", key)
                         continue
+
+                    sensor_type = parts[0].lower()
+                    if sensor_type in IGNORED_SENSOR_TYPES:
+                        _LOGGER.debug("Ignoring sensor type: %s", sensor_type)
+                        continue
+
                     for point in values:
                         chart_data.append({
                             "sensor_type": sensor_type,
@@ -102,7 +109,7 @@ class AroyaSensor(SensorEntity):
 
         sensor_type_lc = self._sensor_type.lower()
         if sensor_type_lc in ["temperature", "soil_temp", "air_temp"]:
-            self._attr_unit_of_measurement = "c"
+            self._attr_unit_of_measurement = UnitOfTemperature.CELSIUS
             self._attr_device_class = "temperature"
         elif sensor_type_lc in ["humidity", "rel_hum", "soil_moist"]:
             self._attr_unit_of_measurement = PERCENTAGE
@@ -111,13 +118,13 @@ class AroyaSensor(SensorEntity):
             self._attr_unit_of_measurement = "g/m³"
             self._attr_device_class = "humidity"
         elif sensor_type_lc == "co2":
-            self._attr_unit_of_measurement = "ppm"
+            self._attr_unit_of_measurement = UnitOfConcentration.PARTS_PER_MILLION
             self._attr_device_class = "carbon_dioxide"
         elif sensor_type_lc == "ppfd":
             self._attr_unit_of_measurement = "µmol/m²/s"
             self._attr_device_class = "illuminance"
-        elif sensor_type_lc == "pore_ec":
-            self._attr_unit_of_measurement = "dS/m"
+        elif sensor_type_lc == "port_ec":
+            self._attr_unit_of_measurement = "mS/cm"
             self._attr_device_class = "voltage"
 
     @property
@@ -140,9 +147,11 @@ class AroyaSensor(SensorEntity):
             if isinstance(resp_json, dict) and "results" in resp_json:
                 data = []
                 for key, values in resp_json["results"].items():
-                    try:
-                        sensor_type = key.split(":")[0]
-                    except IndexError:
+                    parts = key.split(":")
+                    if not parts:
+                        continue
+                    sensor_type = parts[0].lower()
+                    if sensor_type != self._sensor_type:
                         continue
                     for point in values:
                         data.append({
@@ -151,14 +160,14 @@ class AroyaSensor(SensorEntity):
                             "value": point["y"],
                         })
             elif isinstance(resp_json, list):
-                data = resp_json
+                data = [r for r in resp_json if r.get("sensor_type") == self._sensor_type]
             else:
                 _LOGGER.warning("Unexpected update data format for %s: %s", self._attr_name, resp_json)
                 return
 
             new_readings = [
                 r for r in data
-                if r["sensor_type"] == self._sensor_type and r["timestamp"] not in self._seen_timestamps
+                if r["timestamp"] not in self._seen_timestamps
             ]
 
             if new_readings:
