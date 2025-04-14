@@ -53,8 +53,6 @@ config/
         ├── const.py
         ├── manifest.json
         ├── README.md
-        └── icons/
-            └── aroya.jpg
 ```
 
 ---
