@@ -20,7 +20,8 @@ IGNORED_SENSOR_TYPES = {
     "link_quality",
     "radio_power",
     "signal",
-    "travel_time"
+    "travel_time",
+    "abs_hum"
 }
 
 async def async_setup_entry(hass, entry, async_add_entities):
@@ -134,7 +135,7 @@ class AroyaSensor(SensorEntity):
             self._attr_unit_of_measurement = "µmol/m²/s"
             self._attr_device_class = "illuminance"
         elif sensor_type_lc == "pore_ec":
-            self._attr_unit_of_measurement = "mS/cm"
+            self._attr_unit_of_measurement = "dS/m"
             self._attr_device_class = "voltage"
 
     @property
