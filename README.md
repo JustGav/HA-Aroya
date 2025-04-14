@@ -3,7 +3,7 @@
 Integrate your Aroya environmental sensors into Home Assistant!  
 This custom integration automatically discovers all Aroya devices and creates sensors based on their telemetry.
 
-![Aroya Logo](custom_components/aroya/icons/aroya_logo_merged_256x256.png)
+![Aroya Logo](custom_components/aroya/icons/icon.png)
 
 ---
 
