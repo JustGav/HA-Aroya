@@ -123,7 +123,7 @@ class AroyaSensor(SensorEntity):
         elif sensor_type_lc == "ppfd":
             self._attr_unit_of_measurement = "µmol/m²/s"
             self._attr_device_class = "illuminance"
-        elif sensor_type_lc == "port_ec":
+        elif sensor_type_lc == "pore_ec":
             self._attr_unit_of_measurement = "mS/cm"
             self._attr_device_class = "voltage"
 
