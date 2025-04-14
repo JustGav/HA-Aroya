@@ -7,5 +7,5 @@
   "requirements": [],
   "config_flow": true,
   "logo": "icon.png",
-  "version": "1.1.22"
+  "version": "1.2.0"
 }
