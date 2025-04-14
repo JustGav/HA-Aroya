@@ -6,6 +6,6 @@
   "issue_tracker": "https://github.com/JustGav/HA-Aroya/issues",
   "requirements": [],
   "config_flow": true,
-  "logo": "icon.png",
+  "logo": "aroya_logo_merged_256x256.png",
   "version": "1.1.19"
 }
