@@ -11,7 +11,7 @@ from .const import DOMAIN, API_BASE
 _LOGGER = logging.getLogger(__name__)
 
 IGNORED_MODELS = {"gateway", "sink"}
-IGNORED_SENSOR_TYPES = {"battery_v"}
+IGNORED_SENSOR_TYPES = {"battery_v","link_quality","radio_power","travel_time"}
 
 
 async def async_setup_entry(hass, entry, async_add_entities):
