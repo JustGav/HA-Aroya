@@ -44,9 +44,10 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 _LOGGER.warning("Failed to load chart for device %s: %s", device_id, e)
                 continue
 
-            if isinstance(resp_json, dict) and "results" in resp_json:
-                chart_data = []
-                for key, values in resp_json["results"].items():
+            chart_data = []
+
+            if isinstance(resp_json, dict):
+                for key, values in resp_json.items():
                     parts = key.split(":")
                     if not parts:
                         _LOGGER.warning("Could not parse sensor_type from key: %s", key)
@@ -144,9 +145,9 @@ class AroyaSensor(SensorEntity):
                 _LOGGER.warning("Failed to update %s: %s", self._attr_name, e)
                 return
 
-            if isinstance(resp_json, dict) and "results" in resp_json:
+            if isinstance(resp_json, dict):
                 data = []
-                for key, values in resp_json["results"].items():
+                for key, values in resp_json.items():
                     parts = key.split(":")
                     if not parts:
                         continue
