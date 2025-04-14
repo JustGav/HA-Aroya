@@ -4,7 +4,7 @@ import async_timeout
 
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.const import CONF_API_KEY, PERCENTAGE
-from homeassistant.components.sensor.const import UnitOfTemperature, UnitOfConcentration
+from homeassistant.components.sensor.const import UnitOfTemperature
 
 from .const import DOMAIN, API_BASE
 
@@ -118,7 +118,7 @@ class AroyaSensor(SensorEntity):
             self._attr_unit_of_measurement = "g/m³"
             self._attr_device_class = "humidity"
         elif sensor_type_lc == "co2":
-            self._attr_unit_of_measurement = UnitOfConcentration.PARTS_PER_MILLION
+            self._attr_unit_of_measurement = "ppm"
             self._attr_device_class = "carbon_dioxide"
         elif sensor_type_lc == "ppfd":
             self._attr_unit_of_measurement = "µmol/m²/s"
