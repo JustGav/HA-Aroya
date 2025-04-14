@@ -1,5 +1,5 @@
 {
-  "name": "Aroya Integration",
+  "name": "Aroya",
   "domain": "aroya",
   "codeowners": ["@JustGav"],
   "documentation": "https://github.com/JustGav/HA-Aroya",

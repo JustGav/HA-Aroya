@@ -1,6 +1,6 @@
 {
   "domain": "aroya",
-  "name": "Aroya Integration",
+  "name": "Aroya",
   "version": "1.2.0",
   "documentation": "https://cannabus.io/aroya",
   "requirements": ["aiohttp", "async_timeout"],
