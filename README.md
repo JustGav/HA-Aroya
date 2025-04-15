@@ -10,10 +10,20 @@ This custom integration automatically discovers all Aroya devices and creates se
 ## 🔧 Features
 
 - Auto-discovers Aroya devices using your API key.
+![Aroya Logo](screen-1.png)
 - Creates individual sensors for:
   - Temperature (`air_temp`, `soil_temp`)
-  - Humidity (`rel_hum`, `abs_hum`)
+  ![Aroya Logo](screen-air-temp.png)
+  ![Aroya Logo](screen-soil-temp.png)
+
+  - Humidity (`rel_hum`)
+  ![Aroya Logo](screen-rel-hum-temp.png)
+
   - CO2, EC, Soil Moisture, and more
+  ![Aroya Logo](screen-co2.png)
+  ![Aroya Logo](screen-pore-ec.png)
+  ![Aroya Logo](screen-soil-moist.png)
+
 - Ignores irrelevant sensor types like travel time or battery info.
 - Converts Fahrenheit values to Celsius automatically.
 - Beautiful icons to match each sensor type.
@@ -92,7 +102,6 @@ If you want to customize icons or add new sensor mappings, you can edit the `ico
 ## 👨‍💻 Maintainer
 
 Created by [@JustGav](https://github.com/JustGav)  
-Logo and integration design by Cannabus.io
 
 For more information about the Aroya API:  
 🔗 [https://www.cannabus.io/aroya](https://www.cannabus.io/aroya)
