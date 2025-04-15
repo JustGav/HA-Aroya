@@ -12,6 +12,7 @@ This custom integration automatically discovers all Aroya devices and creates se
 - Auto-discovers Aroya devices using your API key.
 ![Aroya Logo](screen-1.png)
 - Creates individual sensors for:
+
   - Temperature (`air_temp`, `soil_temp`)
   ![Aroya Logo](screen-air-temp.png)
   ![Aroya Logo](screen-soil-temp.png)
@@ -26,7 +27,6 @@ This custom integration automatically discovers all Aroya devices and creates se
 
 - Ignores irrelevant sensor types like travel time or battery info.
 - Converts Fahrenheit values to Celsius automatically.
-- Beautiful icons to match each sensor type.
 
 ---
 
