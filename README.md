@@ -17,7 +17,7 @@ This custom integration automatically discovers all Aroya devices and creates se
   ![Aroya Logo](screen-soil-temp.png)
 
   - Humidity (`rel_hum`)
-  ![Aroya Logo](screen-rel-hum-temp.png)
+  ![Aroya Logo](screen-rel-hum.png)
 
   - CO2, EC, Soil Moisture, and more
   ![Aroya Logo](screen-co2.png)
