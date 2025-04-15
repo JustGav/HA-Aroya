@@ -14,13 +14,18 @@ This custom integration automatically discovers all Aroya devices and creates se
 - Creates individual sensors for:
 
   - Temperature (`air_temp`, `soil_temp`)
+
   ![Aroya Logo](screen-air-temp.png)
   ![Aroya Logo](screen-soil-temp.png)
 
+
   - Humidity (`rel_hum`)
+
   ![Aroya Logo](screen-rel-hum.png)
 
+
   - CO2, EC, Soil Moisture, and more
+
   ![Aroya Logo](screen-co2.png)
   ![Aroya Logo](screen-pore-ec.png)
   ![Aroya Logo](screen-soil-moist.png)
