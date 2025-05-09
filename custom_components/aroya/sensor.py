@@ -91,7 +91,11 @@ async def async_setup_entry(hass, entry, async_add_entities):
                 latest = max(readings, key=lambda x: x["timestamp"])
                 value = latest["value"]
                 if sensor_type.lower() in ["temperature", "soil_temp", "air_temp"]:
-                    value = (value - 32) * 5.0 / 9.0
+                    if value is not None:
+                         value = (value - 32) * 5.0 / 9.0
+                    else:
+                value = None  # Or some sensible default
+
                 entity = AroyaSensor(
                     serial_number=serial,
                     device_id=device_id,
