@@ -90,17 +90,21 @@ async def async_setup_entry(hass, entry, async_add_entities):
             for sensor_type, readings in readings_by_type.items():
                 latest = max(readings, key=lambda x: x["timestamp"])
                 value = latest["value"]
+
                 if sensor_type.lower() in ["temperature", "soil_temp", "air_temp"]:
                     if value is not None:
-                         value = (value - 32) * 5.0 / 9.0
+                        value = (value - 32) * 5.0 / 9.0
                     else:
-                value = None  # Or some sensible default
+                        value = None
+
+                if value is not None:
+                    value = round(value, 2)
 
                 entity = AroyaSensor(
                     serial_number=serial,
                     device_id=device_id,
                     sensor_type=sensor_type,
-                    initial_value=round(value, 2),
+                    initial_value=value,
                     api_key=api_key,
                     seen_timestamps={r["timestamp"] for r in readings},
                 )
@@ -188,7 +192,10 @@ class AroyaSensor(SensorEntity):
             if new_readings:
                 latest = max(new_readings, key=lambda x: x["timestamp"])
                 value = latest["value"]
-                if self._sensor_type.lower() in ["temperature", "soil_temp", "air_temp"]:
+
+                if self._sensor_type.lower() in ["temperature", "soil_temp", "air_temp"] and value is not None:
                     value = (value - 32) * 5.0 / 9.0
-                self._state = round(value, 2)
-                self._seen_timestamps.update(r["timestamp"] for r in new_readings)
+
+                if value is not None:
+                    self._state = round(value, 2)
+                    self._seen_timestamps.update(r["timestamp"] for r in new_readings)
